@@ -5,6 +5,21 @@ import logging
 class Tagnator:
 
     def __init__(self, log_level: str='INFO'):
+        """
+            Tagnator creates tags on AWS resources
+
+            Usage:
+
+            >> tag = Tagnator(log_level='DEBUG')
+            >> tag.volume_attachments()
+            >> # tag volumes by key
+            >> tag.tag_volumes_by_key(key='project')
+
+            TODO:
+                CLI
+
+        :param log_level:
+        """
         # Log setup
         # log constants
         __app_name = 'tagnator'
@@ -34,6 +49,11 @@ class Tagnator:
         self.volumes = self.ec2.volumes.all()
 
     def tag_volumes_by_key(self, key: str='project'):
+        """
+
+        :param key:
+        :return: None
+        """
         for vol in self.volumes:
             for attr in vol.attachments:
                 instance_id = attr['InstanceId']
@@ -53,12 +73,24 @@ class Tagnator:
                         self.log.info('No tag key {key} found on the instance'.format(key=key))
 
     def volume_attachments(self):
+        """
+
+        :return:
+        """
         for vol in self.volumes:
             self.log.debug('Volumes attachments: {}'.format(vol.attachments))
 
 
 if __name__ == '__main__':
+    from sys import argv
+
+    # check for app argv
+    if len(argv) < 1:
+        key = argv[1]
+    else:
+        key = 'project'
+
     tag = Tagnator(log_level='DEBUG')
     tag.volume_attachments()
     # tag volumes by key
-    tag.tag_volumes_by_key(key='project')
+    tag.tag_volumes_by_key(key=key)
